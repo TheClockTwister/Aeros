@@ -1,8 +1,44 @@
 ![](Icon_header.png)
 
 # Aeros Documentation
-Aeros is a package containing wrappers for widely used Web and API functions.
-The whole package is based on Quart/Flask.
+Aeros is a production-grade ASGI (Asynchronous Server Gateway Interface) package
+containing wrappers for widely used Web and API functions.
+
+## Features
+- High-performance web server
+  - Async request handling
+  - Supports multi-threading
+- Production-grade ASGI (async WSGI)
+- In-Python code API
+- Easy Framework based on Flask/Quart
+
+
+## Why use Aeros over Flask and Quart?
+While Flask is one of the most popular and frequently used frameworks, it doesn't come
+with a full WSGI server. Therefore, you will need an additional module like Waitress or
+Gunicorn. Quart shares the same features as Flask, but you can get more performance out
+of it, since it supports asynchronous request handling. But as for Flask, you will need
+a WSGI (an ASGI in this case) to deploy your Quart app into production. The most popular
+ASGI at the moment is called Hypercorn and is installed together with Quart.
+
+But Hypercorn does only support deployment from console. Meaning, you will have to invoke
+a start command like: `hypercorn <file>:<app_variable_name>` to start your server. This
+makes it hard to deploy a multi-thread web server.
+
+Aeros combines all the benefits from Quart and Hypercorn, while maintaining the in-Python
+API, making it easy to create an application that can be run from custom code, not by shell.
+
+A more detailed overview of pros and cons can be found here:
+
+| Framework              | Async | Production-grade  | Easy to use       | In-Python API
+|:-----------------------|:-----:|:-----------------:|:-----------------:|:-------------:
+| Flask                  | No    | No                | No                 | Yes
+| Flask + Waitress       | No    | Yes                 | No                | Yes
+| Flask + Gunicorn       | Yes     | Yes                | No                 | Yes
+| Quart                  | Yes     | No                | Yes                 | No
+| Quart + Hypercorn      | Yes     | Yes                | Yes                 | No
+||    
+| Aeros                  | Yes     | Yes                | Yes                 | Yes
 
 ## Getting started
 This basic code snippet should get you ready for more. Remember that routed methods 

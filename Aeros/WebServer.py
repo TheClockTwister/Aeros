@@ -1,3 +1,6 @@
+"""
+Main web server instance
+"""
 import argparse
 import warnings
 import inspect
@@ -38,7 +41,7 @@ class WebServer(Quart):
         raise Exception("QuartServer() is unable to find own instance file:name")
 
     def start(self, hypercorn_arg_string: str = "-w 1") -> None:
-        """ This method is copied from hypercorn.__main___ and runs a Quart application like from the command prompt. """
+        """ This method is very similar to hypercorn.__main___ and runs a Quart application like from the command prompt. """
 
         def _convert_verify_mode(value: str) -> ssl.VerifyMode:
             try:
