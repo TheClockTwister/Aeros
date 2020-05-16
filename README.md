@@ -10,10 +10,11 @@ containing wrappers for widely used Web and API functions.
   - Supports multi-threading
 - Production-grade ASGI (async WSGI)
 - In-Python code API
+- Can be run in a separate thread
 - Easy Framework based on Flask/Quart
 
 
-## Why use Aeros over Flask and Quart?
+### Why use Aeros over Flask and Quart?
 While Flask is one of the most popular and frequently used frameworks, it doesn't come
 with a full WSGI server. Therefore, you will need an additional module like Waitress or
 Gunicorn. Quart shares the same features as Flask, but you can get more performance out
@@ -30,17 +31,17 @@ API, making it easy to create an application that can be run from custom code, n
 
 A more detailed overview of pros and cons can be found here:
 
-| Framework              | Async | Production-grade  | Easy to use       | In-Python API
-|:-----------------------|:-----:|:-----------------:|:-----------------:|:-------------:
-| Flask                  | No    | No                | Yes                 | Yes
-| Flask + Waitress       | No    | Yes                 | Yes                | Yes
-| Flask + Gunicorn       | Yes     | Yes                | No                 | Yes
-| Quart                  | Yes     | No                | Yes                 | Yes
-| Quart + Hypercorn      | Yes     | Yes                | Yes                 | No
+| Framework              | Async | Production-grade | Easy to use | In-Python API | Callable from thread |
+|:-----------------------|:-----:|:----------------:|:-----------:|:-------------:|:---------------------:
+| Flask                  | No    | No               | Yes         | Yes           | ?
+| Flask + Waitress       | No    | Yes              | Yes         | Yes           | ?
+| Flask + Gunicorn       | Yes   | Yes              | No          | Yes           | ?
+| Quart                  | Yes   | No               | Yes         | Yes           | ?
+| Quart + Hypercorn      | Yes   | Yes              | Yes         | No            | No
 ||    
-| Aeros                  | Yes     | Yes                | Yes                 | Yes
+| Aeros                  | Yes   | Yes              | Yes         | Yes           | Yes
 
-## Getting started
+### Getting started
 This basic code snippet should get you ready for more. Remember that routed methods 
 (the ones that are called on an HTTP endpoint) must be defined with `async def`, not `def`!
 
@@ -60,9 +61,9 @@ if __name__ == '__main__':
     app.start("-w 2")  # worker threads (for more arguments see hypercorn documentation)
 ```
 
+## Full Documentation
 
-
-## Using sync methods in async methods
+### Using sync methods in async methods
 If you need to execute a synchronous method in an HTTP request handler and need to wait
 for its response, you should use `sync_to_async` from `asgiref.sync`. This method can also
 be imported from `Aeros.misc`:
@@ -81,3 +82,30 @@ async def home():
     status = sync_method()
     return jsonify({"response": status})
 ```
+
+### Starting a server in a separate thread
+Quart and Hypercorn don't allow server instances to be started from a non `__main__` thread.
+Aeros however does. This code shows how:
+```python
+from Aeros import WebServer
+from Aeros.threading import AdvancedThread
+from threading import Thread
+import time
+
+app = WebServer(__name__, host="0.0.0.0", port=80, worker_threads=2)
+
+...
+
+if __name__ == '__main__':
+    t = AdvancedThread(target=lambda: app.run_server(), daemon=True) # you need a lambda here
+    # OR
+    t = Thread(target=lambda: app.run_server(), daemon=True)
+
+    t.start()
+    time.sleep(120)
+    t.stop() # only available in AdvancedThread, not in Thread
+```
+Please notice that you must invoke `thread=lambda: app.run_server()` into the `Thread()`/`AdvancedThread()`
+constructor and **not** `thread=app.run_server`! The function passed into `Thread()`/`AdvancedThread()` must be defined
+in the same file that `app` is defined.
+

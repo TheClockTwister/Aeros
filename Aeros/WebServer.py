@@ -8,9 +8,8 @@ import ssl
 from typing import Union
 
 from quart import Quart
-from hypercorn.run import Config, run
-
-from .threading import AdvancedThread
+from .run import run
+from hypercorn.config import Config
 
 
 class WebServer(Quart):
@@ -21,10 +20,12 @@ class WebServer(Quart):
     directly from the Python code itself, making it easier to integrate in higher-level scripts and
     applications without calling os.system() od subprocess.Popen(). """
 
-    def __init__(self, import_name: str, host: str = None, port: int = None, logging_level: Union[int, str] = "INFO"):
+    def __init__(self, import_name: str, host: str = None, port: int = None, hypercorn_arg_string: str = "", worker_threads: int = 1, logging_level: Union[int, str] = "INFO"):
         super().__init__(import_name)
         self.logger.setLevel(logging_level)
         self.host, self.port = host, port
+        self.hypercorn_arg_string = hypercorn_arg_string
+        self.worker_threads = worker_threads
 
     def _get_own_instance_path(self):
         """ Since hypercorn needs the application's file and global variable name, an instance needs to know
@@ -32,16 +33,19 @@ class WebServer(Quart):
          or defined from, this method searches for the correct module/file and evaluates it's instance name. """
 
         for i in range(10):
-            frame = inspect.stack()[i][0].f_globals.items()
-            for key, val in frame:
-                try:
-                    if val == self:
-                        return f"{dict(frame)['__name__']}:{key}"
-                except (RuntimeError, AttributeError, KeyError):
-                    pass
+            try:
+                frame = inspect.stack()[i][0].f_globals.items()
+                for key, val in frame:
+                    try:
+                        if val == self:
+                            return f"{dict(frame)['__name__']}:{key}"
+                    except (RuntimeError, AttributeError, KeyError):
+                        pass
+            except:
+                pass
         raise Exception("QuartServer() is unable to find own instance file:name")
 
-    def start(self, hypercorn_arg_string: str = "", worker_threads: int = 1) -> None:
+    def run_server(self) -> None:
         """ This method is very similar to hypercorn.__main___ and runs a Quart application like from the command prompt. """
 
         def _convert_verify_mode(value: str) -> ssl.VerifyMode:
@@ -83,13 +87,13 @@ class WebServer(Quart):
         parser.add_argument("-w", "--workers", dest="workers", default=sentinel, type=int)
         parser.add_argument("--verify-mode", type=_convert_verify_mode, default=sentinel)
 
-        args = hypercorn_arg_string.split(" ").remove("") if "" in hypercorn_arg_string.split(" ") else hypercorn_arg_string.split(" ")
+        args = self.hypercorn_arg_string.split(" ").remove("") if "" in self.hypercorn_arg_string.split(" ") else self.hypercorn_arg_string.split(" ")
         args = parser.parse_args(args)
         config = Config()
         config.application_path = self._get_own_instance_path()
         config.loglevel = args.log_level
 
-        self.logger.debug(f"Setting-up server with command 'hypercorn {hypercorn_arg_string} {config.application_path}'")
+        self.logger.debug(f"Setting-up server with command 'hypercorn {self.hypercorn_arg_string} {config.application_path}'")
 
         if args.access_logformat is not sentinel:
             config.access_log_format = args.access_logformat
@@ -139,7 +143,7 @@ class WebServer(Quart):
             config.user = args.user
         if args.worker_class is not sentinel:
             config.worker_class = args.worker_class
-        config.workers = worker_threads
+        config.workers = self.worker_threads
         if args.workers is not sentinel:
             config.workers = args.workers
         if self.host and self.port:
@@ -153,8 +157,3 @@ class WebServer(Quart):
 
         self.logger.info(f"Starting web server from {config.application_path}.")
         run(config)
-
-    def start_as_thread(self, name="web_server", daemon: bool = True, *args, **kwargs) -> AdvancedThread:
-        t = AdvancedThread(*args, name=name, target=self.start, daemon=daemon, **kwargs)
-        t.start()
-        return t
