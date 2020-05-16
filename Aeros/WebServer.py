@@ -5,12 +5,12 @@ import argparse
 import warnings
 import inspect
 import ssl
-from typing import Optional, List, Callable
-
 from typing import Union
 
 from quart import Quart
 from hypercorn.run import Config, run
+
+from .threading import AdvancedThread
 
 
 class WebServer(Quart):
@@ -153,3 +153,8 @@ class WebServer(Quart):
 
         self.logger.info(f"Starting web server from {config.application_path}.")
         run(config)
+
+    def start_as_thread(self, name="web_server", daemon: bool = True, *args, **kwargs) -> AdvancedThread:
+        t = AdvancedThread(*args, name=name, target=self.start, daemon=daemon, **kwargs)
+        t.start()
+        return t
