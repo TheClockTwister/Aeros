@@ -1,5 +1,13 @@
 ![](Icon_header.png)
 
+<p align="center">
+  <img src="https://img.shields.io/pypi/pyversions/Aeros?label=Python Version&style=flat-square">
+  <img src="https://img.shields.io/pypi/v/Aeros?label=PyPi%20Version&style=flat-square"/>
+  <img src="https://img.shields.io/pypi/format/Aeros?label=PyPi Format&style=flat-square"/>
+  <img src="https://img.shields.io/pypi/dm/Aeros?label=Downloads&style=flat-square"/>
+  <img src="https://img.shields.io/github/repo-size/TheClockTwister/Aeros?label=Repo Size&style=flat-square">
+</p>
+
 # Aeros Documentation
 Aeros is a production-grade ASGI (Asynchronous Server Gateway Interface) package
 containing wrappers for widely used Web and API functions.
