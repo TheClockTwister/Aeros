@@ -32,10 +32,10 @@ A more detailed overview of pros and cons can be found here:
 
 | Framework              | Async | Production-grade  | Easy to use       | In-Python API
 |:-----------------------|:-----:|:-----------------:|:-----------------:|:-------------:
-| Flask                  | No    | No                | No                 | Yes
-| Flask + Waitress       | No    | Yes                 | No                | Yes
+| Flask                  | No    | No                | Yes                 | Yes
+| Flask + Waitress       | No    | Yes                 | Yes                | Yes
 | Flask + Gunicorn       | Yes     | Yes                | No                 | Yes
-| Quart                  | Yes     | No                | Yes                 | No
+| Quart                  | Yes     | No                | Yes                 | Yes
 | Quart + Hypercorn      | Yes     | Yes                | Yes                 | No
 ||    
 | Aeros                  | Yes     | Yes                | Yes                 | Yes

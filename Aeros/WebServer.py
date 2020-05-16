@@ -5,6 +5,7 @@ import argparse
 import warnings
 import inspect
 import ssl
+from typing import Optional, List, Callable
 
 from typing import Union
 
@@ -40,7 +41,7 @@ class WebServer(Quart):
                     pass
         raise Exception("QuartServer() is unable to find own instance file:name")
 
-    def start(self, hypercorn_arg_string: str = "-w 1") -> None:
+    def start(self, hypercorn_arg_string: str = "", worker_threads: int = 1) -> None:
         """ This method is very similar to hypercorn.__main___ and runs a Quart application like from the command prompt. """
 
         def _convert_verify_mode(value: str) -> ssl.VerifyMode:
@@ -82,7 +83,8 @@ class WebServer(Quart):
         parser.add_argument("-w", "--workers", dest="workers", default=sentinel, type=int)
         parser.add_argument("--verify-mode", type=_convert_verify_mode, default=sentinel)
 
-        args = parser.parse_args(hypercorn_arg_string.split(" "))
+        args = hypercorn_arg_string.split(" ").remove("") if "" in hypercorn_arg_string.split(" ") else hypercorn_arg_string.split(" ")
+        args = parser.parse_args(args)
         config = Config()
         config.application_path = self._get_own_instance_path()
         config.loglevel = args.log_level
@@ -137,6 +139,7 @@ class WebServer(Quart):
             config.user = args.user
         if args.worker_class is not sentinel:
             config.worker_class = args.worker_class
+        config.workers = worker_threads
         if args.workers is not sentinel:
             config.workers = args.workers
         if self.host and self.port:
