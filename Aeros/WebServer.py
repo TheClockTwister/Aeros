@@ -20,8 +20,10 @@ class WebServer(Quart):
     directly from the Python code itself, making it easier to integrate in higher-level scripts and
     applications without calling os.system() od subprocess.Popen(). """
 
-    def __init__(self, import_name: str, host: str = None, port: int = None, hypercorn_arg_string: str = "", worker_threads: int = 1, logging_level: Union[int, str] = "INFO"):
-        super().__init__(import_name)
+    def __init__(self, import_name: str, host: str = None, port: int = None,
+                 hypercorn_arg_string: str = "", worker_threads: int = 1, logging_level: Union[int, str] = "INFO",
+                 *args, **kwargs):
+        super().__init__(import_name, *args, **kwargs)
         self.logger.setLevel(logging_level)
         self.host, self.port = host, port
         self.hypercorn_arg_string = hypercorn_arg_string
