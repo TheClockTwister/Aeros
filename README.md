@@ -20,6 +20,7 @@ containing wrappers for widely used Web and API functions.
 - In-Python code API
 - Can be run in a separate thread
 - Easy Framework based on Flask/Quart
+- Custom global headers (like CORS etc.)
 
 
 ### Why use Aeros over Flask and Quart?
@@ -114,4 +115,23 @@ if __name__ == '__main__':
     t.stop() # only available in AdvancedThread, not in Thread
 ```
 
+### Headers
+#### Adding custom global headers
+You can define headers, which will be sent on every response, no matter the response type.
+```python
+from Aeros import WebServer
 
+app = WebServer(__name__, global_headers={"foo":"bar"})
+
+...
+```
+
+#### Remove the `server` header
+The `server` header can be removed on initialization:
+```python
+from Aeros import WebServer
+
+app = WebServer(__name__, include_server_header=False)
+
+...
+```

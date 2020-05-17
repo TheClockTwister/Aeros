@@ -5,11 +5,11 @@ import argparse
 import warnings
 import inspect
 import ssl
-from typing import Union
+from typing import Union, Dict
 
 from quart import Quart
 from .hypercorn_patches.run import run
-from hypercorn.config import Config
+from .hypercorn_patches.Config import Config
 
 
 class WebServer(Quart):
@@ -20,14 +20,19 @@ class WebServer(Quart):
     directly from the Python code itself, making it easier to integrate in higher-level scripts and
     applications without calling os.system() od subprocess.Popen(). """
 
-    def __init__(self, import_name: str, host: str = None, port: int = None,
+    def __init__(self, import_name: str, host: str = None, port: int = None, include_server_header: bool = True,
                  hypercorn_arg_string: str = "", worker_threads: int = 1, logging_level: Union[int, str] = "INFO",
+                 global_headers: Dict[str, str] = {},
                  *args, **kwargs):
+
         super().__init__(import_name, *args, **kwargs)
+
         self.logger.setLevel(logging_level)
-        self.host, self.port = host, port
-        self.hypercorn_arg_string = hypercorn_arg_string
-        self.worker_threads = worker_threads
+        self._host, self._port = host, port
+        self._global_headers = global_headers
+        self._hypercorn_arg_string = hypercorn_arg_string
+        self._worker_threads = worker_threads
+        self._include_server_header = include_server_header
 
     def _get_own_instance_path(self):
         """ DEPRECATED!
@@ -90,9 +95,9 @@ class WebServer(Quart):
         parser.add_argument("-w", "--workers", dest="workers", default=sentinel, type=int)
         parser.add_argument("--verify-mode", type=_convert_verify_mode, default=sentinel)
 
-        args = self.hypercorn_arg_string.split(" ").remove("") if "" in self.hypercorn_arg_string.split(" ") else self.hypercorn_arg_string.split(" ")
+        args = self._hypercorn_arg_string.split(" ").remove("") if "" in self._hypercorn_arg_string.split(" ") else self._hypercorn_arg_string.split(" ")
         args = parser.parse_args(args)
-        config = Config()
+        config = Config(self._global_headers)
 
         config.loglevel = args.log_level
 
@@ -144,15 +149,18 @@ class WebServer(Quart):
             config.user = args.user
         if args.worker_class is not sentinel:
             config.worker_class = args.worker_class
-        config.workers = self.worker_threads
+        config.workers = self._worker_threads
         if args.workers is not sentinel:
             config.workers = args.workers
-        if self.host and self.port:
-            config.bind = [f'{self.host}:{self.port}']
+        if self._host and self._port:
+            config.bind = [f'{self._host}:{self._port}']
         if len(args.binds) > 0:
             config.bind = args.binds
         if len(args.insecure_binds) > 0:
             config.insecure_bind = args.insecure_binds
         if len(args.quic_binds) > 0:
             config.quic_bind = args.quic_binds
+
+        config.include_server_header = self._include_server_header
+
         run(self, config)
