@@ -5,5 +5,5 @@
 build/
 dist/
 build_and_upload.cmd
-testing.py
+testing*.py
 setup.*

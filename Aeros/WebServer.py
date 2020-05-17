@@ -8,8 +8,8 @@ import ssl
 from typing import Union, Dict
 
 from quart import Quart
-from .hypercorn_patches.run import run
-from .hypercorn_patches.Config import Config
+from Aeros.patches.hypercorn.run import run
+from Aeros.patches.hypercorn.Config import Config
 
 
 class WebServer(Quart):
