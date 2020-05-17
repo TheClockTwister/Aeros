@@ -2,7 +2,7 @@ import platform
 import random
 import time
 from multiprocessing import Event
-from .threading import AdvancedThread
+from Aeros.threading import AdvancedThread
 from hypercorn.config import Config
 from hypercorn.utils import write_pid_file
 
