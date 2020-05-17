@@ -105,15 +105,13 @@ app = WebServer(__name__, host="0.0.0.0", port=80, worker_threads=2)
 ...
 
 if __name__ == '__main__':
-    t = AdvancedThread(target=lambda: app.run_server(), daemon=True) # you need a lambda here
+    t = AdvancedThread(target=app.run_server, daemon=True) # you need a lambda here
     # OR
-    t = Thread(target=lambda: app.run_server(), daemon=True)
+    t = Thread(target=app.run_server, daemon=True)
 
     t.start()
     time.sleep(120)
     t.stop() # only available in AdvancedThread, not in Thread
 ```
-Please notice that you must invoke `thread=lambda: app.run_server()` into the `Thread()`/`AdvancedThread()`
-constructor and **not** `thread=app.run_server`! The function passed into `Thread()`/`AdvancedThread()` must be defined
-in the same file that `app` is defined.
+
 

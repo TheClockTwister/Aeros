@@ -30,10 +30,11 @@ class WebServer(Quart):
         self.worker_threads = worker_threads
 
     def _get_own_instance_path(self):
-        """ Since hypercorn needs the application's file and global variable name, an instance needs to know
+        """ DEPRECATED!
+         Since hypercorn needs the application's file and global variable name, an instance needs to know
          it's own origin file and name. But since this class is not defined in the same file as it is called
          or defined from, this method searches for the correct module/file and evaluates it's instance name. """
-
+        self.logger.warning("_get_own_instance_path() is deprecated!")
         for i in range(10):
             try:
                 frame = inspect.stack()[i][0].f_globals.items()
@@ -92,10 +93,8 @@ class WebServer(Quart):
         args = self.hypercorn_arg_string.split(" ").remove("") if "" in self.hypercorn_arg_string.split(" ") else self.hypercorn_arg_string.split(" ")
         args = parser.parse_args(args)
         config = Config()
-        config.application_path = self._get_own_instance_path()
-        config.loglevel = args.log_level
 
-        self.logger.debug(f"Setting-up server with command 'hypercorn {self.hypercorn_arg_string} {config.application_path}'")
+        config.loglevel = args.log_level
 
         if args.access_logformat is not sentinel:
             config.access_log_format = args.access_logformat
@@ -156,6 +155,4 @@ class WebServer(Quart):
             config.insecure_bind = args.insecure_binds
         if len(args.quic_binds) > 0:
             config.quic_bind = args.quic_binds
-
-        self.logger.info(f"Starting web server from {config.application_path}.")
-        run(config)
+        run(self, config)

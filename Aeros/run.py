@@ -1,40 +1,28 @@
 import platform
 import random
 import time
-from multiprocessing import Event, Process
-
+from multiprocessing import Event
+from .threading import AdvancedThread
 from hypercorn.config import Config
-from hypercorn.typing import WorkerFunc
 from hypercorn.utils import write_pid_file
 
+from .worker import asyncio_worker
 
-def run(config):
+
+def run(app, config):
     if config.pid_path is not None:
         write_pid_file(config.pid_path)
 
-    worker_func: WorkerFunc
-    if config.worker_class == "asyncio":
-        from hypercorn.asyncio.run import asyncio_worker
-
-        worker_func = asyncio_worker
-    elif config.worker_class == "uvloop":
-        from hypercorn.asyncio.run import uvloop_worker
-
-        worker_func = uvloop_worker
-    elif config.worker_class == "trio":
-        from hypercorn.trio.run import trio_worker
-
-        worker_func = trio_worker
-    else:
+    if config.worker_class != "asyncio":
         raise ValueError(f"No worker of class {config.worker_class} exists")
 
     if config.workers == 1:
-        worker_func(config)
+        asyncio_worker(app, config)
     else:
-        run_multiple(config, worker_func)
+        run_multiple(app, config, asyncio_worker)
 
 
-def run_multiple(config: Config, worker_func: WorkerFunc) -> None:
+def run_multiple(app, config: Config, worker_func: asyncio_worker) -> None:
     if config.use_reloader:
         raise RuntimeError("Reloader can only be used with a single worker")
 
@@ -45,9 +33,9 @@ def run_multiple(config: Config, worker_func: WorkerFunc) -> None:
     shutdown_event = Event()
 
     for _ in range(config.workers):
-        process = Process(
+        process = AdvancedThread(
             target=worker_func,
-            kwargs={"config": config, "shutdown_event": shutdown_event, "sockets": sockets},
+            kwargs={"app": app, "config": config, "shutdown_event": shutdown_event, "sockets": sockets},
         )
         process.daemon = True
         process.start()
@@ -58,7 +46,7 @@ def run_multiple(config: Config, worker_func: WorkerFunc) -> None:
     for process in processes:
         process.join()
     for process in processes:
-        process.terminate()
+        process.stop()
 
     for sock in sockets.secure_sockets:
         sock.close()
