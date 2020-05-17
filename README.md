@@ -1,4 +1,4 @@
-![](Icon_header.png)
+![](images/Icon_header.png)
 
 <p align="center">
   <img src="https://img.shields.io/pypi/pyversions/Aeros?label=Python%20Version&style=flat-square">
@@ -39,15 +39,15 @@ API, making it easy to create an application that can be run from custom code, n
 
 A more detailed overview of pros and cons can be found here:
 
-| Framework              | Async | Production-grade | Easy to use | In-Python API | Callable from thread |
-|:-----------------------|:-----:|:----------------:|:-----------:|:-------------:|:---------------------:
-| Flask                  | No    | No               | Yes         | Yes           | ?
-| Flask + Waitress       | No    | Yes              | Yes         | Yes           | ?
-| Flask + Gunicorn       | Yes   | Yes              | No          | Yes           | ?
-| Quart                  | Yes   | No               | Yes         | Yes           | ?
-| Quart + Hypercorn      | Yes   | Yes              | Yes         | No            | No
+| Framework              | Async                   | Production-grade        | Easy to use             | In-Python API           | Callable from thread |
+|:-----------------------|:-----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:---------------------:
+| Flask                  |                         |                         | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ?
+| Flask + Waitress       |                         | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ?
+| Flask + Gunicorn       | ![Yes](images/tick.png) | ![Yes](images/tick.png) |                         | ![Yes](images/tick.png) | ?
+| Quart                  | ![Yes](images/tick.png) |                         | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ?
+| Quart + Hypercorn      | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ![Yes](images/tick.png) |                         | 
 ||    
-| Aeros                  | Yes   | Yes              | Yes         | Yes           | Yes
+| Aeros                  | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ![Yes](images/tick.png)
 
 ### Getting started
 This basic code snippet should get you ready for more. Remember that routed methods 
@@ -105,7 +105,7 @@ app = WebServer(__name__, host="0.0.0.0", port=80, worker_threads=2)
 ...
 
 if __name__ == '__main__':
-    t = AdvancedThread(target=app.run_server, daemon=True) # you need a lambda here
+    t = AdvancedThread(target=app.run_server, daemon=True)
     # OR
     t = Thread(target=app.run_server, daemon=True)
 
