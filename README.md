@@ -1,4 +1,4 @@
-![](images/Icon_header.png)
+![](img/Icon_header.png)
 
 <p align="center">
   <img src="https://img.shields.io/pypi/pyversions/Aeros?label=Python%20Version&style=flat-square">
@@ -40,15 +40,14 @@ API, making it easy to create an application that can be run from custom code, n
 
 A more detailed overview of pros and cons can be found here:
 
-| Framework              | Async                   | Production-grade        | Easy to use             | In-Python API           | Callable from thread |
-|:-----------------------|:-----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:---------------------:
-| Flask                  |                         |                         | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ?
-| Flask + Waitress       |                         | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ?
-| Flask + Gunicorn       | ![Yes](images/tick.png) | ![Yes](images/tick.png) |                         | ![Yes](images/tick.png) | ?
-| Quart                  | ![Yes](images/tick.png) |                         | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ?
-| Quart + Hypercorn      | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ![Yes](images/tick.png) |                         | 
-||    
-| Aeros                  | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ![Yes](images/tick.png) | ![Yes](images/tick.png)
+| Feature              | Aeros           |     | Flask           | Flask + Waitress | Flask + Gunicorn | Quart           |Quart + Hypercorn  |
+|:---------------------|:---------------:|:---:|:---------------:|:----------------:|:----------------:|:---------------:|:-----------------:|
+| In-Python API        | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  | ![x](img/t.png)  | ![x](img/t.png) | ![x](img/t.png)   |
+| Easy to use          | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  | ![x](img/t.png) |                   |
+| Production-grade     | ![x](img/t.png) |     |                 | ![x](img/t.png)  | ![x](img/t.png)  |                 | ![x](img/t.png)   |
+| Asynchronous         | ![x](img/t.png) |     |                 |                  |                  | ![x](img/t.png) | ![x](img/t.png)   |
+| Callable from thread | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  |                 |                   |
+
 
 ### Getting started
 This basic code snippet should get you ready for more. Remember that routed methods 
