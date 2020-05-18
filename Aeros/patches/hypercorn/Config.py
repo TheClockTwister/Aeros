@@ -3,7 +3,7 @@ from hypercorn.config import format_date_time, List, Tuple, time, Dict
 
 
 class Config(OriginalConfig):
-    def __init__(self, custom_headers: Dict[str, str], *args, **kwargs):
+    def __init__(self, custom_headers: Dict[str, str] = {}, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__custom_headers = custom_headers
 

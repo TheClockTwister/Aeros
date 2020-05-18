@@ -18,6 +18,7 @@ containing wrappers for widely used Web and API functions.
   - Supports multi-threading
 - Production-grade ASGI (async WSGI)
 - In-Python code API
+- Native server-side caching
 - Can be run in a separate thread
 - Easy Framework based on Flask/Quart
 - Custom global headers (like CORS etc.)
@@ -47,6 +48,8 @@ A more detailed overview of pros and cons can be found here:
 | Production-grade     | ![x](img/t.png) |     |                 | ![x](img/t.png)  | ![x](img/t.png)  |                 | ![x](img/t.png)   |
 | Asynchronous         | ![x](img/t.png) |     |                 |                  |                  | ![x](img/t.png) | ![x](img/t.png)   |
 | Callable from thread | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  |                 |                   |
+| Native caching       | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
+
 
 
 ### Getting started
@@ -135,36 +138,39 @@ app = WebServer(__name__, include_server_header=False)
 ...
 ```
 
-## Beta Features (still in development)
 ### Caching
+By default, `WebServer()` has no cache configured. You can choose between 
+multiple cache types to start your server instance with:
+
+| Cache Type          | Description |
+|---------------------|-------------|
+| `SimpleCache()`     | Easy to set-up, not very stable with multiple worker threads.
+| `FilesystemCache()` | Stores every unique request in a separate file in a given directory.
+| `RedisCache()`      | Stores cached objects on a given Redis server.
+
+Here, the most basic example
 ```python
 from Aeros import WebServer
 from asyncio import sleep
-from Aeros import Cache
+from Aeros import SimpleCache
 
-# See documentation for more information:
-# https://flask-caching.readthedocs.io/en/latest/
-# https://pythonhosted.org/Flask-Caching/
+cache = SimpleCache(timeout=10,  # Cache objects are deleted after this time [s]
+                    threshold=10 # Only 10 objects are stored in cache
+                   )
 
-cache = Cache(config={'CACHE_TYPE': 'simple'})
-
-app = WebServer(__name__, host="0.0.0.0", port=80, worker_threads=4)
-cache.init_app(app)
-
+app = WebServer(__name__, host="0.0.0.0", port=80, worker_threads=4, cache=cache)
 
 @app.route("/")
 @app.route("/<path:path>")
-@cache.cached(timeout=50)
+@app.cache()
 async def index(path=""):
     print(path)
     if path != "favicon.ico":
         await sleep(5)
     return "test"
 
-
 if __name__ == '__main__':
     app.run_server()
-
 ```
 
 ### Compression

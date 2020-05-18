@@ -3,8 +3,11 @@ from flask_caching import *
 
 
 class Cache(OriginalCache):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, timeout: int = 60 * 60, threshold: int = 100, *args, **kwargs):
+        OriginalCache.__init__(self, config={}, *args, **kwargs)
+        self.config["CACHE_TYPE"] = "null"
+        self.config["CACHE_THRESHOLD"] = threshold
+        self.config["CACHE_DEFAULT_TIMEOUT"] = timeout
 
     def cached(
             self,
@@ -225,3 +228,26 @@ class Cache(OriginalCache):
             return decorated_function
 
         return decorator
+
+
+class SimpleCache(Cache):
+    def __init__(self, *args, **kwargs):
+        Cache.__init__(self, *args, **kwargs)
+        self.config["CACHE_TYPE"] = "simple"
+
+
+class FilesystemCache(Cache):
+    def __init__(self, directory: str, *args, **kwargs):
+        Cache.__init__(self, *args, **kwargs)
+        self.config["CACHE_TYPE"] = "filesystem"
+        self.config["CACHE_DIR"] = directory
+
+
+class RedisCache(Cache):
+    def __init__(self, host: str, port: int, password: str = "", db: int = 0, *args, **kwargs):
+        Cache.__init__(self, *args, **kwargs)
+        self.config["CACHE_TYPE"] = "redis"
+        self.config["CACHE_REDIS_HOST"] = host
+        self.config["CACHE_REDIS_PORT"] = port
+        self.config["CACHE_REDIS_PASSWORD"] = password
+        self.config["CACHE_REDIS_DB"] = db
