@@ -19,6 +19,7 @@ containing wrappers for widely used Web and API functions.
 - Production-grade ASGI (async WSGI)
 - In-Python code API
 - Native server-side caching
+- Native gzip compression
 - Can be run in a separate thread
 - Easy Framework based on Flask/Quart
 - Custom global headers (like CORS etc.)
@@ -49,6 +50,7 @@ A more detailed overview of pros and cons can be found here:
 | Asynchronous         | ![x](img/t.png) |     |                 |                  |                  | ![x](img/t.png) | ![x](img/t.png)   |
 | Callable from thread | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  |                 |                   |
 | Native caching       | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
+| Native compression   | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
 
 
 
@@ -174,6 +176,8 @@ if __name__ == '__main__':
 ```
 
 ### Compression
+Aeros supports gzip compression, which is enabled by default (for all text-based files >500 bytes, with compression level 2).
+You can customize these compression settings by default
 ```python
 from Aeros import WebServer, Compress, AdvancedThread
 import time

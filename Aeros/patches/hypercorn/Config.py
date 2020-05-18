@@ -3,9 +3,9 @@ from hypercorn.config import format_date_time, List, Tuple, time, Dict
 
 
 class Config(OriginalConfig):
-    def __init__(self, custom_headers: Dict[str, str] = {}, *args, **kwargs):
+    def __init__(self, custom_headers: Dict[str, str] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__custom_headers = custom_headers
+        self.__custom_headers = custom_headers if custom_headers else {}
 
     def response_headers(self, protocol: str) -> List[Tuple[bytes, bytes]]:
         """ This function is patched to include custom headers, which will

@@ -9,10 +9,12 @@ import inspect
 import ssl
 from typing import Union, Dict
 from quart import Quart
+import hashlib
 
 from .patches.hypercorn.run import run
 from .patches.hypercorn.Config import Config
-from .patches.flask_caching.Cache import SimpleCache, Cache
+from .caching import Cache
+from .compression import Compression
 
 
 def make_config_from_hypercorn_args(hypercorn_string: str, config: Config = Config()) -> Config:
@@ -129,9 +131,10 @@ class WebServer(Quart):
     directly from the Python code itself, making it easier to integrate in higher-level scripts and
     applications without calling os.system() od subprocess.Popen(). """
 
-    def __init__(self, import_name: str, host: str = None, port: int = None, include_server_header: bool = True,
+    def __init__(self, import_name: str, host: str = "0.0.0.0", port: int = 80, include_server_header: bool = True,
                  hypercorn_arg_string: str = "", worker_threads: int = 1, logging_level: Union[int, str] = "INFO",
-                 global_headers: Dict[str, str] = {}, cache: Cache = Cache(),
+                 cache: Cache = Cache(), compression: Compression = Compression(level=2, min_size=10),
+                 global_headers: Dict[str, str] = None,
                  *args, **kwargs):
 
         super().__init__(import_name, *args, **kwargs)
@@ -144,6 +147,7 @@ class WebServer(Quart):
         self._include_server_header = include_server_header
 
         self._cache = cache
+        self._compression = compression
 
     def _get_own_instance_path(self):
         """ DEPRECATED!
@@ -164,13 +168,15 @@ class WebServer(Quart):
                 pass
         raise Exception("QuartServer() is unable to find own instance file:name")
 
-    def cache(self, *args, **kwargs):
+    def cache(self, timeout=None, key_prefix="view/%s", unless=None, forced_update=None,
+              response_filter=None, query_string=False, hash_method=hashlib.md5, cache_none=False, ):
         """ A simple wrapper that forwards cached() decorator to the internal
         Cache() instance. May be used as the normal @cache.cached() decorator. """
 
         def decorator(f):
             @functools.wraps(f)
-            @self._cache.cached(*args, **kwargs)
+            @self._cache.cached(timeout=timeout, key_prefix=key_prefix, unless=unless, forced_update=forced_update,
+                                response_filter=response_filter, query_string=query_string, hash_method=hash_method, cache_none=cache_none)
             async def decorated_function(*args2, **kwargs2):
                 x = await f(*args2, **kwargs2)
                 return x
@@ -182,8 +188,6 @@ class WebServer(Quart):
     def run_server(self) -> None:
         """ Generates the necessary config and runs the server instance. """
 
-        # Initialize extra features just in case the user replaced them with their own instances
-        self._cache.init_app(self)
         config = Config(self._global_headers)
 
         config.bind = [f'{self._host}:{self._port}']
@@ -192,5 +196,10 @@ class WebServer(Quart):
 
         # override config items if specified in hypercorn arguments
         config = make_config_from_hypercorn_args(self._hypercorn_arg_string, config=config)
+
+        # Initialize extra features just in case the user replaced them with their own instances
+        self._cache.init_app(self)
+        if type(self._compression == Compression):
+            self._compression.init_app(self)
 
         run(self, config)
