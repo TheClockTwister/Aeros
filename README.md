@@ -52,6 +52,7 @@ A more detailed overview of pros and cons can be found here:
 | Native caching       | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
 | Native compression   | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
 
+![](img/benchmark.png)
 
 
 ### Getting started
