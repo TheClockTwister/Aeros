@@ -1,4 +1,4 @@
-![](img/Icon_header.png)
+![](img/header.png)
 
 <p align="center">
   <img src="https://img.shields.io/pypi/pyversions/Aeros?label=Python%20Version&style=flat-square">
