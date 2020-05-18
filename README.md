@@ -134,3 +134,73 @@ app = WebServer(__name__, include_server_header=False)
 
 ...
 ```
+
+## Beta Features (still in development)
+### Caching
+```python
+from Aeros import WebServer
+from asyncio import sleep
+from Aeros import Cache
+
+# See documentation for more information:
+# https://flask-caching.readthedocs.io/en/latest/
+# https://pythonhosted.org/Flask-Caching/
+
+cache = Cache(config={'CACHE_TYPE': 'simple'})
+
+app = WebServer(__name__, host="0.0.0.0", port=80, worker_threads=4)
+cache.init_app(app)
+
+
+@app.route("/")
+@app.route("/<path:path>")
+@cache.cached(timeout=50)
+async def index(path=""):
+    print(path)
+    if path != "favicon.ico":
+        await sleep(5)
+    return "test"
+
+
+if __name__ == '__main__':
+    app.run_server()
+
+```
+
+### Compression
+```python
+from Aeros import WebServer, Compress, AdvancedThread
+import time
+
+# For more information:
+# https://github.com/colour-science/flask-compress
+
+app = WebServer(__name__, host="0.0.0.0", port=80, worker_threads=2, )
+app.config["COMPRESS_MIN_SIZE"] = 5  # size in bytes
+app.config["COMPRESS_LEVEL"] = 2  # compresses to about 25% of original size
+app.config["COMPRESS_MIMETYPES"] = [  # compresses all text-based things
+    'text/plain',
+    'text/html',
+    'text/css',
+    'text/scss',
+    'text/xml',
+    'application/json',
+    'application/javascript'
+]
+
+Compress(app)
+
+
+@app.route("/")
+async def home():
+    return "testing again..."
+
+
+if __name__ == '__main__':
+    t = AdvancedThread(target=app.run_server, daemon=True)
+
+    t.start()
+    time.sleep(120)
+    t.stop()  # only available in AdvancedThread, not in Thread
+
+```

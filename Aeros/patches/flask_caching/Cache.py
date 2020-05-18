@@ -113,13 +113,8 @@ class Cache(OriginalCache):
                     return await f(*args, **kwargs)
 
                 try:
-                    if query_string:
-                        cache_key = "{}{}{}".format(f.__name__, args, kwargs)
 
-                    else:
-                        cache_key = _make_cache_key(
-                            args, kwargs, use_request=True
-                        )
+                    cache_key = "{}{}{}".format(f.__name__, args, kwargs)
 
                     if (
                             callable(forced_update)
