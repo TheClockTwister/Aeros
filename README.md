@@ -48,6 +48,7 @@ A more detailed overview of pros and cons can be found here:
 | Easy to use          | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  | ![x](img/t.png) |                   |
 | Production-grade     | ![x](img/t.png) |     |                 | ![x](img/t.png)  | ![x](img/t.png)  |                 | ![x](img/t.png)   |
 | Asynchronous         | ![x](img/t.png) |     |                 |                  |                  | ![x](img/t.png) | ![x](img/t.png)   |
+| Multiple workers     | ![x](img/t.png) |     |                 | ![x](img/t.png)  | ![x](img/t.png)  | ![x](img/t.png) | ![x](img/t.png)   |
 | Callable from thread | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  |                 |                   |
 | Native caching       | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
 | Native compression   | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
