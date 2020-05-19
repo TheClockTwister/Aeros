@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/github/repo-size/TheClockTwister/Aeros?label=Repo%20Size&style=flat-square">
 </p>
 
-# Aeros Documentation
+# Aeros Framework Documentation
 Aeros is a production-grade ASGI (Asynchronous Server Gateway Interface) package
 containing wrappers for widely used Web and API functions.
 

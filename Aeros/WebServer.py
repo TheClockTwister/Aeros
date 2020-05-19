@@ -8,7 +8,7 @@ import warnings
 import inspect
 import ssl
 from typing import Union, Dict
-from quart import Quart
+from .patches.quart.app import Quart
 import hashlib
 
 from .patches.hypercorn.run import run
