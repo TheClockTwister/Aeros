@@ -11,8 +11,7 @@ from typing import Union, Dict
 from .patches.quart.app import Quart
 import hashlib
 
-from .patches.hypercorn.run import run
-from .patches.hypercorn.Config import Config
+from .patches.hypercorn import run,Config
 from .caching import Cache
 from .compression import Compression
 

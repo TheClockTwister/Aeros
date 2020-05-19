@@ -7,4 +7,3 @@ build/
 dist/
 build_and_upload.cmd
 testing*.py
-setup.*

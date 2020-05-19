@@ -1,4 +1,4 @@
-from .patches.flask_caching.Cache import Cache
+from .patches.flask_caching import Cache
 
 
 class SimpleCache(Cache):
