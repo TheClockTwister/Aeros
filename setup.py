@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Aeros",
-    version="1.0.3",
+    version="1.0.4",
     author="TheClockTwister",
     description="High-performance ASGI framework",
     long_description=long_description,
@@ -18,7 +18,7 @@ setuptools.setup(
     install_requires=requirements,
     classifiers=[
         "Programming Language :: Python :: 3.6",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GPL-3.0 License",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
