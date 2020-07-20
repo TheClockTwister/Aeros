@@ -42,17 +42,17 @@ API, making it easy to create an application that can be run from custom code, n
 
 A more detailed overview of pros and cons can be found here:
 
-| Feature              | Aeros           |     | Flask           | Flask + Waitress | Flask + Gunicorn | Quart           |Quart + Hypercorn  |
-|:---------------------|:---------------:|:---:|:---------------:|:----------------:|:----------------:|:---------------:|:-----------------:|
-| In-Python API        | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  | ![x](img/t.png)  | ![x](img/t.png) | ![x](img/t.png)   |
-| Easy to use          | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  | ![x](img/t.png) |                   |
-| Production-grade     | ![x](img/t.png) |     |                 | ![x](img/t.png)  | ![x](img/t.png)  |                 | ![x](img/t.png)   |
-| Asynchronous         | ![x](img/t.png) |     |                 |                  |                  | ![x](img/t.png) | ![x](img/t.png)   |
-| Multiple workers     | ![x](img/t.png) |     |                 | ![x](img/t.png)  | ![x](img/t.png)  | ![x](img/t.png) | ![x](img/t.png)   |
-| Callable from thread | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  |                 |                   |
-| Native caching       | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
-| Native compression   | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
-
+| Feature               | Aeros           |     | Flask           | Flask + Waitress | Flask + Gunicorn | Quart           |Quart + Hypercorn  |
+|:----------------------|:---------------:|:---:|:---------------:|:----------------:|:----------------:|:---------------:|:-----------------:|
+| In-Python API         | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  | ![x](img/t.png)  | ![x](img/t.png) | ![x](img/t.png)   |
+| Easy to use           | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  | ![x](img/t.png) |                   |
+| Production-grade      | ![x](img/t.png) |     |                 | ![x](img/t.png)  | ![x](img/t.png)  |                 | ![x](img/t.png)   |
+| Asynchronous          | ![x](img/t.png) |     |                 |                  |                  | ![x](img/t.png) | ![x](img/t.png)   |
+| Multiple workers      | ![x](img/t.png) |     |                 | ![x](img/t.png)  | ![x](img/t.png)  | ![x](img/t.png) | ![x](img/t.png)   |
+| Callable from thread  | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  |                 |                   |
+| Native caching        | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
+| Native compression    | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
+| Native CORS support   | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
 
 ### Getting started
 This basic code snippet should get you ready for more. Remember that routed methods 
