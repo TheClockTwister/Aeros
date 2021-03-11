@@ -3,7 +3,10 @@
 **/*.psd
 /*.egg-info/
 
-build/
-dist/
-build_and_upload.cmd
-testing*.py
+**/build/
+**/dist/
+**/*.cmd
+Python/*.egg-info
+*.rar
+
+docs/_build/

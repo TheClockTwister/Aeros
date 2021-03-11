@@ -1,4 +1,4 @@
-![](img/header.png)
+![](https://raw.githubusercontent.com/TheClockTwister/Aeros/master/img/header.png)
 
 <p align="center">
   <img src="https://img.shields.io/pypi/pyversions/Aeros?label=Python%20Version&style=flat-square">
@@ -8,59 +8,75 @@
   <img src="https://img.shields.io/github/repo-size/TheClockTwister/Aeros?label=Repo%20Size&style=flat-square">
 </p>
 
-# Aeros Framework Documentation
-Aeros is a production-grade ASGI (Asynchronous Server Gateway Interface) package
-containing wrappers for widely used Web and API functions.
+# Python package documentation
+
+[Aeros](https://pypi.org/project/Aeros/) is an all-in-one ASGI (Asynchronous Server Gateway Interface) package containing wrappers for widely used Web and API functions, as well as
+custom-written helper functions which make backend development a lot easier and require way less code than a native implementation using the featured packages would.
+
+It is primarily meant to simplify backend server development with Python by bundling APIs for multiple modules, such as `quart`, `flask-caching`, `quart-compress`, `uvicorn` and
+some more. While you can focus on developing your backend with one streamlined package, Aeros takes care of dependencies and compatibility.
 
 ## Features
+
 - High-performance web server
-  - Async request handling
-  - Supports multi-threading
+    - Async request handling
+    - Supports multi-threading
 - Production-grade ASGI (async WSGI)
 - In-Python code API
 - Native server-side caching
 - Native gzip compression
-- Can be run in a separate thread
+- Easy client-side caching (cache-control header)
 - Easy Framework based on Flask/Quart
 - Custom global headers (like CORS etc.)
-
+- Colored logging output
+- Detailed access logs
 
 ### Why use Aeros over Flask and Quart?
-While Flask is one of the most popular and frequently used frameworks, it doesn't come
-with a full WSGI server. Therefore, you will need an additional module like Waitress or
-Gunicorn. Quart shares the same features as Flask, but you can get more performance out
-of it, since it supports asynchronous request handling. But as for Flask, you will need
-a WSGI (an ASGI in this case) to deploy your Quart app into production. The most popular
-ASGI at the moment is called Hypercorn and is installed together with Quart.
 
-But Hypercorn does only support deployment from console. Meaning, you will have to invoke
-a start command like: `hypercorn <file>:<app_variable_name>` to start your server. This
-makes it hard to deploy a multi-thread web server.
-
-Aeros combines all the benefits from Quart and Hypercorn, while maintaining the in-Python
-API, making it easy to create an application that can be run from custom code, not by shell.
-
-A more detailed overview of pros and cons can be found here:
+A detailed overview of pros and cons can be found here:
 
 | Feature               | Aeros           |     | Flask           | Flask + Waitress | Flask + Gunicorn | Quart           |Quart + Hypercorn  |
 |:----------------------|:---------------:|:---:|:---------------:|:----------------:|:----------------:|:---------------:|:-----------------:|
-| In-Python API         | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  | ![x](img/t.png)  | ![x](img/t.png) | ![x](img/t.png)   |
-| Easy to use           | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  | ![x](img/t.png) |                   |
-| Production-grade      | ![x](img/t.png) |     |                 | ![x](img/t.png)  | ![x](img/t.png)  |                 | ![x](img/t.png)   |
-| Asynchronous          | ![x](img/t.png) |     |                 |                  |                  | ![x](img/t.png) | ![x](img/t.png)   |
-| Multiple workers      | ![x](img/t.png) |     |                 | ![x](img/t.png)  | ![x](img/t.png)  | ![x](img/t.png) | ![x](img/t.png)   |
-| Callable from thread  | ![x](img/t.png) |     | ![x](img/t.png) | ![x](img/t.png)  |                  |                 |                   |
-| Native caching        | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
-| Native compression    | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
-| Native CORS support   | ![x](img/t.png) |     |                 |                  |                  |                 |                   |
+| In-Python API         | ![x](doc/t.png) |     | ![x](doc/t.png) | ![x](doc/t.png)  | ![x](doc/t.png)  | ![x](doc/t.png) | ![x](doc/t.png)   |
+| Easy to use           | ![x](doc/t.png) |     | ![x](doc/t.png) | ![x](doc/t.png)  |                  | ![x](doc/t.png) |                   |
+| Production-grade      | ![x](doc/t.png) |     |                 | ![x](doc/t.png)  | ![x](doc/t.png)  |                 | ![x](doc/t.png)   |
+| Asynchronous          | ![x](doc/t.png) |     |                 |                  |                  | ![x](doc/t.png) | ![x](doc/t.png)   |
+| Multiple workers      | ![x](doc/t.png) |     |                 | ![x](doc/t.png)  | ![x](doc/t.png)  | ![x](doc/t.png) | ![x](doc/t.png)   |
+| Callable from thread  |                 |     | ![x](doc/t.png) | ![x](doc/t.png)  |                  |                 |                   |
+| Native caching        | ![x](doc/t.png) |     |                 |                  |                  |                 |                   |
+| Native compression    | ![x](doc/t.png) |     |                 |                  |                  |                 |                   |
+| Native CORS support   | ![x](doc/t.png) |     |                 |                  |                  |                 |                   |
+| Cache-Control API     | ![x](doc/t.png) |     |                 |                  |                  |                 |                   |
 
-### Getting started
-This basic code snippet should get you ready for more. Remember that routed methods 
+## Parameter & Statistics
+
+| Parameter            | Recommended  | Min     | Max    |
+|:---------------------|-------------:|--------:|-------:|
+| Worker threads       | 8            | 1       | ?      |
+| Concurrent requests  | 64           | 1       | ?      |
+| Worker threads       | 8            | 1       | ?      |
+
+
+The following graph shows the overall performance improvement since version 1.0.6. The replacement of Aeros backend in version 2.0.0 is clearly visible as a boot in single-thread
+performance.
+
+![x](doc/versions.png)
+
+The graph below shows the obtained response rates for multiple worker configurations. For most devices, a total of **8 workers and 64 concurrent requests** will extract the largest
+amount of performance from the hardware. Everything above will actually slow the service down, since it has to do a lot of load balancing and negotiation between the workers. When
+accepting more concurrent requests, the server queues them up for execution by one of the workers, so the more, the better. But, after 64 concurrent requests at once, the server
+will again have to deal with a lot of load balancing and will eventually loose performance. So a total of 64 concurrent requests is recommended.
+
+![x](doc/workers.png)
+
+## Getting started
+
+This basic code snippet should get you ready for more. Remember that routed methods
 (the ones that are called on an HTTP endpoint) must be defined with `async def`, not `def`!
 
 ```python
 from Aeros import WebServer
-from Aeros.misc import jsonify
+from quart import jsonify
 
 app = WebServer(__name__, host="0.0.0.0", port=80)
 
@@ -71,24 +87,26 @@ async def home():
 
 
 if __name__ == '__main__':
-    app.start("-w 2")  # worker threads (for more arguments see hypercorn documentation)
+    app.run_server()
 ```
 
 ## Full Documentation
 
 ### Using sync methods in async methods
-If you need to execute a synchronous method in an HTTP request handler and need to wait
-for its response, you should use `sync_to_async` from `asgiref.sync`. This method can also
+
+If you need to execute a synchronous method in an HTTP request handler and need to wait for its response, you should use `sync_to_async` from `asgiref.sync`. This method can also
 be imported from `Aeros.misc`:
 
 ```python
 from Aeros.misc import sync_to_async
 import time
 
+
 @sync_to_async
 def sync_method():
     time.sleep(2)
     return "ok"
+
 
 @app.route("/")
 async def home():
@@ -97,11 +115,12 @@ async def home():
 ```
 
 ### Starting a server in a separate thread
-Quart and Hypercorn don't allow server instances to be started from a non `__main__` thread.
-Aeros however does. This code shows how:
+
+Quart and Hypercorn don't allow server instances to be started from a non `__main__` thread. Aeros however does. This code shows how:
+
 ```python
 from Aeros import WebServer
-from Aeros.threading import AdvancedThread
+from Aeros import AdvancedThread
 from threading import Thread
 import time
 
@@ -116,22 +135,27 @@ if __name__ == '__main__':
 
     t.start()
     time.sleep(120)
-    t.stop() # only available in AdvancedThread, not in Thread
+    t.stop()  # only available in AdvancedThread, not in Thread
 ```
 
 ### Headers
+
 #### Adding custom global headers
+
 You can define headers, which will be sent on every response, no matter the response type.
+
 ```python
 from Aeros import WebServer
 
-app = WebServer(__name__, global_headers={"foo":"bar"})
+app = WebServer(__name__, global_headers={"foo": "bar"})
 
 ...
 ```
 
 #### Remove the `server` header
+
 The `server` header can be removed on initialization:
+
 ```python
 from Aeros import WebServer
 
@@ -141,8 +165,8 @@ app = WebServer(__name__, include_server_header=False)
 ```
 
 ### Caching
-By default, `WebServer()` has no cache configured. You can choose between 
-multiple cache types to start your server instance with:
+
+By default, `WebServer()` has no cache configured. You can choose between multiple cache types to start your server instance with:
 
 | Cache Type          | Description |
 |---------------------|-------------|
@@ -151,16 +175,18 @@ multiple cache types to start your server instance with:
 | `RedisCache()`      | Stores cached objects on a given Redis server.
 
 Here, the most basic example
+
 ```python
 from Aeros import WebServer
 from asyncio import sleep
 from Aeros import SimpleCache
 
 cache = SimpleCache(timeout=10,  # Cache objects are deleted after this time [s]
-                    threshold=10 # Only 10 objects are stored in cache
-                   )
+                    threshold=10  # Only 10 objects are stored in cache
+                    )
 
 app = WebServer(__name__, host="0.0.0.0", port=80, worker_threads=4, cache=cache)
+
 
 @app.route("/")
 @app.route("/<path:path>")
@@ -171,13 +197,16 @@ async def index(path=""):
         await sleep(5)
     return "test"
 
+
 if __name__ == '__main__':
     app.run_server()
 ```
 
 ### Compression
-Aeros supports gzip compression, which is enabled by default (for all text-based files >500 bytes, with compression level 2).
-You can customize these compression settings by default
+
+Aeros supports gzip compression, which is enabled by default (for all text-based files >500 bytes, with compression level 2). You can customize these compression settings by
+default
+
 ```python
 from Aeros import WebServer, Compress, AdvancedThread
 import time
