@@ -31,6 +31,17 @@ class WebServer(Quart):
     def __init__(self, import_name: str, host: str = "0.0.0.0", port: int = 80, include_server_header: bool = True,
                  logging_level: int = INFO, cache: Cache = None, compression: Base = None,
                  global_headers: dict = {}, *args, **kwargs):
+        """
+        Arguments:
+            import_name (str): A name for the web server instance (usually __name__)
+            host (str): The hostname / IP address to bind to
+            port (int): The TCP port to bind to
+            include_server_header (bool): If True, the "server" response header will be set (default: True)
+            logging_level (int): Log level for console logging (default: logging.INFO)
+            cache (Cache): Any caching instance from Aeros
+            compression (Base): Any compression instance from Aeros (Gzip or Br)
+            global_headers (dict): Response headers to be sent on every response
+        """
 
         super().__init__(import_name, *args, **kwargs)
 
@@ -113,6 +124,7 @@ class WebServer(Quart):
             `uvicorn.run()` method as they are passed into `Config(app, **kwargs)`. This method also configures features like caching
             and compression that are not default in Quart or Flask and unique to Aeros or require third-party modules to be configured.
         """
+
         if kwargs.get('suppress_deprecation_warning', False):
             del kwargs['suppress_deprecation_warning']
         else:
@@ -162,7 +174,7 @@ class WebServer(Quart):
                 'error': {'formatter': 'default', 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stderr'}
             },
             'loggers': {
-                'uvicorn': {'level': log_level, 'handlers': ['default']},
+                'uvicorn': {'level': log_level if log_level else INFO, 'handlers': ['default']},
                 'uvicorn.access': {'level': 'INFO', 'propagate': False, 'handlers': []}
             }
         }
