@@ -13,7 +13,7 @@ setuptools.setup(
     description="High-performance ASGI framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://gitlab.com/theclocktwister/aeros",
+    url="https://github.com/TheClockTwister/Aeros",
     packages=setuptools.find_packages(),
     install_requires=requirements,
     classifiers=[
