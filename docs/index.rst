@@ -2,45 +2,31 @@ Aeros Python Documentation
 ===========================================================
 
 .. _Aeros: https://pypi.org/project/Aeros/
-.. _`GitLab Repository`: https://gitlab.com/wiesen.leon/aeros
+.. _`GitHub Repository`: https://github.com/TheClockTwister/Aeros
 .. _`PyPi Package`: https://pypi.org/project/Aeros/
-.. _`npm Package`: https://www.npmjs.com/package/aeros-frontend
 
 
 Aeros_ is a production-grade ASGI (Asynchronous Server Gateway Interface) package
 containing wrappers for widely used Web and API functions.
 
+**Have a look at the** :ref:`Getting Started` **section!**
+
 .. admonition:: Contributors wanted
 
     Please keep in mind that this package including all source code and documentation
     is developed and maintained by a single person. I am investing a large amount of
-    time into maintaining this project in order to supply the most intuitive, yet powerful
-    high-level API possible.
+    time into maintaining projects like this in order to supply the most intuitive, yet
+    powerful and high-level API as possible.
 
     **Any collaborative contributions, especially improvements and fixes are appreciated
-    and should be inquired via an issue at the** `GitLab Repository`_.
-
-
-
-
+    and should be inquired via an issue at the** `GitHub Repository`_.
 
 
 Aeros Repository Links
 -----------------------------------------------------------
 - :ref:`genindex`
-- `GitLab Repository`_
+- `GitHub Repository`_
 - `PyPi Package`_
-- `npm Package`_ (comming soon)
-
-
-
-
-
-..
-    This is a comment
-
-
-
 
 
 .. toctree::

@@ -435,3 +435,10 @@ html.writer-html4 .rst-content dl:not(.docutils) dl:not(.field-list) > dt, html.
 .wy-menu-vertical header, .wy-menu-vertical p.caption {
     color: #9e42c8;
 }
+
+
+a.copybtn {
+    top: 0.7rem !important;
+    width: 2rem !important;
+    height: 2rem !important;
+}

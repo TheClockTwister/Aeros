@@ -1,5 +1,5 @@
 """
-Main web server instance
+This module contains the main web server class
 """
 
 import functools
@@ -7,23 +7,24 @@ import inspect
 from quart import Quart
 import hashlib
 import uvicorn
+import logging
+import logging.handlers
 from logging import INFO
 import sys
 
 from .caching.server import Cache
 from .compression import Base
 from .Request import EasyRequest
-import logging
-import logging.handlers
 
 
 class WebServer(Quart):
     """ This is the main server class which extends a standard Flask class by a bunch of features and major
-    performance improvements. It extends the Quart class, which by itself is already an enhanced version of
-    the Flask class. This class however allows production-grade  deployment using the hypercorn WSGI server
-    as production server. But instead of calling the hypercorn command via the console, it can be started
+    performance improvements. It extends the quart class, which by itself is already an enhanced version of
+    the Flask class. This class however allows production-grade deployment using the uvicorn ASGI server
+    as production server. But instead of calling the uvicorn command via the console, it can be started
     directly from the Python code itself, making it easier to integrate in higher-level scripts and
-    applications without calling os.system() od subprocess.Popen(). """
+    applications without calling os.system() or subprocess.Popen().
+    """
 
     __log_format_std = '[%(asctime)s] %(levelname)s: %(message)s'  # for instance logger "quart.app"
 
@@ -51,8 +52,8 @@ class WebServer(Quart):
 
     def cache(self, timeout=None, key_prefix="view/%s", unless=None, forced_update=None,
               response_filter=None, query_string=False, hash_method=hashlib.md5, cache_none=False, ):
-        """ A simple wrapper that forwards cached() decorator to the internal
-        Cache() instance. May be used as the normal @cache.cached() decorator. """
+        """ A simple wrapper that forwards the cached() decorator to the internal Cache() instance.
+        May be used as the normal @cache.cached() decorator."""
 
         def decorator(f):
             if self._cache is None:
@@ -71,6 +72,7 @@ class WebServer(Quart):
         return decorator
 
     def clear_cache(self):
+        """ Clears the WebServer instance cache. Use with caution!"""
         self._cache.clear()
 
     def _get_own_instance_path(self) -> str:
@@ -185,11 +187,7 @@ class WebServer(Quart):
                 del config['workers']
                 self.logger.info(f"Starting in single-thread mode...")
 
-        x = config.get('app')
-        del config['app']
-        print(x)
-
-        uvicorn.run(x, **config)
+        uvicorn.run(**config)
 
     def run(self, *args, **kwargs):
         return self.run_server(*args, **kwargs, suppress_deprecation_warning=True)
