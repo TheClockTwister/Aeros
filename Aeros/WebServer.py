@@ -4,16 +4,17 @@ Main web server instance
 
 import functools
 import inspect
-from typing import Union, List, Tuple
 from quart import Quart
 import hashlib
 import uvicorn
 from logging import INFO
-from colorama import init
+import sys
 
 from .caching.server import Cache
 from .compression import Base
 from .Request import EasyRequest
+import logging
+import logging.handlers
 
 
 class WebServer(Quart):
@@ -23,6 +24,8 @@ class WebServer(Quart):
     as production server. But instead of calling the hypercorn command via the console, it can be started
     directly from the Python code itself, making it easier to integrate in higher-level scripts and
     applications without calling os.system() od subprocess.Popen(). """
+
+    __log_format_std = '[%(asctime)s] %(levelname)s: %(message)s'  # for instance logger "quart.app"
 
     def __init__(self, import_name: str, host: str = "0.0.0.0", port: int = 80, include_server_header: bool = True,
                  logging_level: int = INFO, cache: Cache = None, compression: Base = None,
@@ -36,6 +39,10 @@ class WebServer(Quart):
 
         self._cache = cache
         self._compression = compression
+
+        h = logging.StreamHandler(sys.stdout)  # make own logging format the same as uvicorn uses
+        h.setFormatter(logging.Formatter(self.__log_format_std))
+        self.logger.handlers = [h]
 
         self._global_headers = global_headers
         if include_server_header:
@@ -65,30 +72,6 @@ class WebServer(Quart):
 
     def clear_cache(self):
         self._cache.clear()
-
-    def __make_config(self, **kwargs) -> dict:
-        """ Initializes all features such as `Compression` and `Cache` that are handled by Aeros.
-        This method is called when a server is going to be run, weather it be via uvicorn single thread
-        or multicore via the filename and variable name.
-
-        Returns:
-            dict: The config used by uvicorn to run the server instance
-        """
-
-        # Initialize extra features just in case the user replaced them with their own instances
-        if issubclass(self._cache.__class__, Cache):
-            self._cache.init_app(self)
-        else:
-            self.logger.info("Caching is disabled")
-
-        if issubclass(self._compression.__class__, Base):
-            self._compression.init_app(self)
-        else:
-            self.logger.info("Compression is disabled")
-
-        kwargs["headers"] = kwargs.get("headers", self._global_headers)  # inject default value if none present
-
-        return kwargs
 
     def _get_own_instance_path(self) -> str:
         """
@@ -120,41 +103,96 @@ class WebServer(Quart):
 
     def run_server(self,
                    host: str = None, port: int = None, log_level: int = None,  # overrides for __init__
-                   use_colors: bool = True, access_log: bool = True,
+                   access_log_file: str = None, access_log_to_std: bool = True,
                    soft_limit: int = 32, hard_limit: int = 42,
                    **kwargs
                    ) -> None:
         """ Generates the necessary config and runs the server instance. Possible keyword arguments are the same as supported by the
-            `uvicorn.run()` method that passes it to `Config(app, **kwargs)`.
+            `uvicorn.run()` method as they are passed into `Config(app, **kwargs)`. This method also configures features like caching
+            and compression that are not default in Quart or Flask and unique to Aeros or require third-party modules to be configured.
         """
-        self.logger.setLevel(log_level if log_level else self.log_level)
-        if use_colors:
-            init()  # init terminal on Windows just to make sure sequences are displayed correctly as colors
+        if kwargs.get('suppress_deprecation_warning', False):
+            del kwargs['suppress_deprecation_warning']
+        else:
+            self.logger.warning('The usage of run_server() is deprecated. Use run() instead.')  # delete, otherwise it gets into the config
 
-        config = self.__make_config(
-            host=host if host else self._host,
-            port=port if port else self._port,
-            log_level=log_level if log_level else self.log_level,
-            use_colors=use_colors, access_log=access_log,
-            limit_concurrency=soft_limit + 1, backlog=hard_limit,
+        # Initialize extra features just in case the user replaced them with their own instances
+        if issubclass(self._cache.__class__, Cache):
+            self._cache.init_app(self)
+            self.logger.info("Caching is enabled")
+        else:
+            self.logger.info("Caching is disabled")
+
+        if issubclass(self._compression.__class__, Base):
+            self._compression.init_app(self)
+            self.logger.info("Compression is enabled")
+        else:
+            self.logger.info("Compression is disabled")
+
+        # create uvicorn configuration ------------------------------------------------------------------------------------------------
+
+        config = {
+            'app': self,
+            'host': host if host else self._host,
+            'port': port if port else self._port,
+            'headers': kwargs.get('headers', self._global_headers),
+
+            'log_level': log_level if log_level else self.log_level,
+            'access_log': bool(access_log_file) or access_log_to_std,
+
+            'limit_concurrency': soft_limit + 1,
+            'backlog': hard_limit,
+
             **kwargs
-        )
-        instance = self
+        }
 
-        # try multi-core execution
+        # set logging information
+        self.logger.setLevel(log_level if log_level else self.log_level)  # re-set log level for instance logger if changed
+        config['log_config'] = {  # logging configuration for uvicorn.run()
+            'version': 1, 'disable_existing_loggers': True,
+            'formatters': {
+                'default': {'()': 'logging.Formatter', 'fmt': self.__log_format_std},
+                'access_file': {'()': 'uvicorn.logging.AccessFormatter', 'fmt': '[%(asctime)s] %(client_addr)s | "%(request_line)s" | %(status_code)s'},
+                'access_std': {'()': 'uvicorn.logging.AccessFormatter', 'fmt': '[%(asctime)s] ACCESS: %(client_addr)s | "%(request_line)s" | %(status_code)s'}
+            },
+            'handlers': {
+                'default': {'formatter': 'default', 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stdout'},
+                'error': {'formatter': 'default', 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stderr'}
+            },
+            'loggers': {
+                'uvicorn': {'level': log_level, 'handlers': ['default']},
+                'uvicorn.access': {'level': 'INFO', 'propagate': False, 'handlers': []}
+            }
+        }
+
+        if access_log_to_std:
+            config['log_config']['handlers']['access_std'] = {'formatter': 'access_std', 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stdout'}
+            config['log_config']['loggers']['uvicorn.access']['handlers'].append('access_std')
+        if access_log_file:
+            config['log_config']['handlers']['access_file'] = {'formatter': 'access_file', 'class': 'logging.FileHandler', 'filename': access_log_file}
+            config['log_config']['loggers']['uvicorn.access']['handlers'].append('access_file')
+
+            # try multi-core execution
         if config.get('workers', None):
             self.logger.debug(f"{self.__class__.__name__}.run_server() multi-core execution is a beta feature. You can also use uvicorn CLI directly.")
             instance_path = self._get_own_instance_path()
             if instance_path is not None:
                 # if instance found, run multi-core by replacing instance with path
-                instance = instance_path
+                config['app'] = instance_path
+                self.logger.info(f"Starting in multi-thread mode...")
             else:
                 # if instance not found, delete worker count and launch single-thread
                 del config['workers']
+                self.logger.info(f"Starting in single-thread mode...")
 
-        self.logger.info(f"Starting in {'multi-thread' if type(instance) == str else 'single-thread'} mode...")
+        x = config.get('app')
+        del config['app']
+        print(x)
 
-        uvicorn.run(instance, **config)
+        uvicorn.run(x, **config)
+
+    def run(self, *args, **kwargs):
+        return self.run_server(*args, **kwargs, suppress_deprecation_warning=True)
 
     def route(self, *args, **kwargs):
         def new_route_decorator(func):
