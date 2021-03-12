@@ -1,3 +1,7 @@
+"""
+This module contains features for client-side caching using the Cache-Control header.
+"""
+
 from enum import Enum
 from quart import Response
 import functools
@@ -5,6 +9,9 @@ from quart import make_response
 
 
 class CacheTypes(Enum):
+    """
+    An enum to replace the cache option strings with variables for auto-complete in most IDEs.
+    """
     NO_CACHE = 'no-cache'
     NO_STORE = 'no-store'
     PUBLIC = 'public'
@@ -12,6 +19,15 @@ class CacheTypes(Enum):
 
 
 class CacheControl:
+    """
+    This class manipulates the Cache-Control header in all responses sent from an endpoint
+    decorated with this class.
+
+    .. hint::
+        If you need conditional caching rules you may still use `response` from quart to
+        manipulate the Cache-Control header to your needs.
+    """
+
     def __init__(
             self, cache_type: CacheTypes, max_age: int = None,
             immutable: bool = False, no_transform: bool = False,
@@ -26,6 +42,7 @@ class CacheControl:
             immutable (bool): If set, browsers will not re-validate
             stale_while_revalidate (int): Time in seconds how long we allow to serve the old content while re-validating
             stale_if_error (bool): Serve the last cached content if backend gives error code
+            cache_on_status (list): A list of HTTP response codes when to apply the policy (default: [200])
 
         """
         self.cache_on_status = cache_on_status

@@ -2,5 +2,5 @@ from .WebServer import *
 from .misc import *
 from .Request import EasyRequest
 from .thread import AdvancedThread
-from .compression import Compression
+from .compression import Gzip, Br
 from .caching import *
