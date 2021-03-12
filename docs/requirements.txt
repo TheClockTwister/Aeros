@@ -4,4 +4,5 @@ sphinx-autoapi
 sphinxcontrib-napoleon
 recommonmark
 sphinx_autodoc_annotation
+sphinx_copybutton
 Aeros

@@ -40,7 +40,10 @@ extensions = [
     'sphinx_rtd_theme',
     'autoapi.extension',
     'sphinx.ext.viewcode',
-    'sphinx_autodoc_annotation'
+    'sphinx_autodoc_annotation',
+    'sphinx.ext.autosectionlabel',
+    'sphinx_copybutton',  # for copying code
+    'sphinx.ext.viewcode',
 ]
 
 source_parsers = {".md": CommonMarkParser}
