@@ -1,0 +1,7 @@
+sphinx-autodoc-typehints
+sphinx-rtd-theme
+sphinx-autoapi
+sphinxcontrib-napoleon
+recommonmark
+sphinx_autodoc_annotation
+Aeros

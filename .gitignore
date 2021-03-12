@@ -12,3 +12,5 @@ Python/*.egg-info
 docs/_build/
 
 sandbox\.py
+
+*.log
