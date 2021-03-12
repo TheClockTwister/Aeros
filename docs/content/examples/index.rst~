@@ -10,7 +10,7 @@ Getting Started
     Aeros uses methods from the quart module, which itself copies the syntax of flask.
     You may treat an ``Aeros.WebServer`` instance just like a ``quart.Quart`` instance.
 
-    **Most of the Flask documentation also applies to Quart and therefore to Aeros. Use it!**
+    **Most of the Flask documentation also apply to Quart and therefore to Aeros. Use it!**
 
 Prerequisites
 ===========================================================
