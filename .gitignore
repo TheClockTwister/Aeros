@@ -10,3 +10,7 @@ Python/*.egg-info
 *.rar
 
 docs/_build/
+
+sandbox\.py
+
+*.log

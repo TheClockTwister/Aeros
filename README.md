@@ -1,14 +1,15 @@
 ![](https://raw.githubusercontent.com/TheClockTwister/Aeros/master/img/header.png)
 
 <p align="center">
-  <img src="https://img.shields.io/pypi/pyversions/Aeros?label=Python%20Version&style=flat-square">
-  <img src="https://img.shields.io/pypi/v/Aeros?label=PyPi%20Version&style=flat-square"/>
-  <img src="https://img.shields.io/pypi/format/Aeros?label=PyPi%20Format&style=flat-square"/>
-  <img src="https://img.shields.io/pypi/dm/Aeros?label=Downloads&style=flat-square"/>
-  <img src="https://img.shields.io/github/repo-size/TheClockTwister/Aeros?label=Repo%20Size&style=flat-square">
+  <img src="https://img.shields.io/pypi/pyversions/Aeros?label=Python%20Version">
+  <img src="https://img.shields.io/pypi/v/Aeros?label=PyPi%20Version"/>
+  <img src="https://img.shields.io/github/repo-size/TheClockTwister/Aeros?label=Repo%20Size">
+  <img src="https://img.shields.io/pypi/format/Aeros?label=PyPi%20Format"/>
+  <img src="https://readthedocs.org/projects/aeros/badge/?version=latest"/>
+  <img src="https://img.shields.io/pypi/dm/Aeros?label=Downloads"/>
 </p>
 
-# Python package documentation
+# Python package [documentation](https://aeros.readthedocs.io/en/latest/)
 
 [Aeros](https://pypi.org/project/Aeros/) is an all-in-one ASGI (Asynchronous Server Gateway Interface) package containing wrappers for widely used Web and API functions, as well as
 custom-written helper functions which make backend development a lot easier and require way less code than a native implementation using the featured packages would.
@@ -55,7 +56,6 @@ A detailed overview of pros and cons can be found here:
 | Worker threads       | 8            | 1       | ?      |
 | Concurrent requests  | 64           | 1       | ?      |
 | Worker threads       | 8            | 1       | ?      |
-
 
 The following graph shows the overall performance improvement since version 1.0.6. The replacement of Aeros backend in version 2.0.0 is clearly visible as a boot in single-thread
 performance.

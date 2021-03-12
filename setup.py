@@ -8,12 +8,12 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Aeros",
-    version="2.0.0a1",
+    version="2.0.0b1",
     author="TheClockTwister",
     description="High-performance ASGI framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://gitlab.com/theclocktwister/aeros",
+    url="https://github.com/TheClockTwister/Aeros",
     packages=setuptools.find_packages(),
     install_requires=requirements,
     classifiers=[
