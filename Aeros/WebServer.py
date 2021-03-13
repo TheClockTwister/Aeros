@@ -114,21 +114,16 @@ class WebServer(Quart):
                 self.logger.critical(f"{self.__class__.__name__} is unable to find own instance file:name. Launching in single-thread mode!")
                 return None
 
-    def run_server(self,
-                   host: str = None, port: int = None, log_level: int = None,  # overrides for __init__
-                   access_log_file: str = None, access_log_to_std: bool = True, traceback: bool = True,
-                   soft_limit: int = 32, hard_limit: int = 42,
-                   **kwargs
-                   ) -> None:
+    def run(self,
+            host: str = None, port: int = None, log_level: int = None,  # overrides for __init__
+            access_log_file: str = None, access_log_to_std: bool = True, traceback: bool = True,
+            soft_limit: int = 32, hard_limit: int = 42,
+            **kwargs
+            ) -> None:
         """ Generates the necessary config and runs the server instance. Possible keyword arguments are the same as supported by the
             `uvicorn.run()` method as they are passed into `Config(app, **kwargs)`. This method also configures features like caching
             and compression that are not default in Quart or Flask and unique to Aeros or require third-party modules to be configured.
         """
-
-        if kwargs.get('suppress_deprecation_warning', False):
-            del kwargs['suppress_deprecation_warning']
-        else:
-            self.logger.warning('The usage of run_server() is deprecated. Use run() instead.')  # delete, otherwise it gets into the config
 
         # Initialize extra features just in case the user replaced them with their own instances
         if issubclass(self._cache.__class__, Cache):
@@ -203,8 +198,9 @@ class WebServer(Quart):
 
         uvicorn.run(**config)
 
-    def run(self, *args, **kwargs):
-        return self.run_server(*args, **kwargs, suppress_deprecation_warning=True)
+    def run_server(self, *args, **kwargs):
+        self.logger.warning('The usage of run_server() is deprecated. Use run() instead.')  # delete, otherwise it gets into the config
+        return self.run(*args, **kwargs)
 
     def route(self, *args, **kwargs):
         def new_route_decorator(func):
