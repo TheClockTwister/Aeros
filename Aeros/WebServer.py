@@ -54,10 +54,6 @@ class WebServer(Quart):
         self._cache = cache
         self._compression = compression
 
-        h = logging.StreamHandler(sys.stdout)  # make own logging format the same as uvicorn uses
-        h.setFormatter(DefaultLogFormatter())
-        self.logger.handlers = [h]
-
         self._global_headers = global_headers
         if include_server_header:
             self._global_headers['server'] = self._global_headers.get('server', 'Aeros 2.0.0 (uvicorn)')  # change server header to Aeros
@@ -121,6 +117,7 @@ class WebServer(Quart):
             log_to_std: bool = True, default_log_file: str = None,  # default logging config
             access_log_to_std: bool = True, access_log_file: str = None,  # access log config
             traceback: bool = True,  # traceback for HTTP-500 exceptions in the quart application
+            color: bool = True,  # CLI color mode
             soft_limit: int = 32, hard_limit: int = 42,  # uvicorn limits for memory limitations
             **kwargs
             ) -> None:
@@ -129,9 +126,14 @@ class WebServer(Quart):
             and compression that are not default in Quart or Flask and unique to Aeros or require third-party modules to be configured.
         """
 
+        h = logging.StreamHandler(sys.stdout)  # make own logging format the same as uvicorn uses
+        h.setFormatter(DefaultLogFormatter(color=color))
+        self.logger.handlers = [h]
+
         if log_to_std:
             print()  # print empty line (makes reading the first CLI line easier)
-            self.logger.info(f"Documentation & common fixes at {click.style('aeros.readthedocs.io', underline=True, fg='bright_blue')}.")
+            msg = click.style('aeros.readthedocs.io', underline=True, fg='bright_blue') if color else 'aeros.readthedocs.io'
+            self.logger.info(f"Documentation & common fixes at {msg}.")
 
         # initialize extra features ---------------------------------------------------------------------------------------------------
 
@@ -175,9 +177,9 @@ class WebServer(Quart):
         config['log_config'] = {  # logging configuration for uvicorn.run()
             'version': 1, 'disable_existing_loggers': True,
             'formatters': {
-                'default': {'()': DefaultLogFormatter, 'color': True},  # stdout output for generic logs
+                'default': {'()': DefaultLogFormatter, 'color': color},  # stdout output for generic logs
                 'default_file': {'()': DefaultLogFormatter, 'color': False},  # logfile for generic logs
-                'access': {'()': AccessLogFormatter, 'color': True},  # stdout output for access logs
+                'access': {'()': AccessLogFormatter, 'color': color},  # stdout output for access logs
                 'access_file': {'()': AccessLogFormatter, 'color': False}  # logfile for access logs
             },
             'handlers': {

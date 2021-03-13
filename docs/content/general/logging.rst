@@ -18,10 +18,13 @@ as described in the following example code snippet:
             return "Hi, I am your new backend :)"
 
         app.run(
-            log_level=DEBUG, # set your desired logging level
-            access_log_to_std=True, # Set False if you don't want the access log in stdout
-            access_log_file='access.log', # Specify if you want to log access to a file
-            traceback=True # Set False if you do not want tracebacks written to stderr
+            log_level=logging.DEBUG, # set logging level (default: INFO)
+            log_to_std=False, # print logs to console (default: True)
+            access_log_to_std=False, # print access logs to console (default: True)
+            default_log_file='log.log', # if specified, write server logs to file
+            access_log_file='access.log', # if specified, write access logs to file
+            traceback=False, # log tracebacks if exceptions occur (default: True)
+            color=True # colored terminal output (default: True) (doesn't affect files)
         )
 
     .. admonition:: Available since version 2.0.0
