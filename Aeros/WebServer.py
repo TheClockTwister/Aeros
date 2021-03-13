@@ -116,7 +116,7 @@ class WebServer(Quart):
 
     def run_server(self,
                    host: str = None, port: int = None, log_level: int = None,  # overrides for __init__
-                   access_log_file: str = None, access_log_to_std: bool = True,
+                   access_log_file: str = None, access_log_to_std: bool = True, traceback: bool = True,
                    soft_limit: int = 32, hard_limit: int = 42,
                    **kwargs
                    ) -> None:
@@ -175,10 +175,12 @@ class WebServer(Quart):
             },
             'loggers': {
                 'uvicorn': {'level': log_level if log_level else INFO, 'handlers': ['default']},
-                'uvicorn.access': {'level': 'INFO', 'propagate': False, 'handlers': []}
+                'uvicorn.access': {'level': 'DEBUG', 'propagate': False, 'handlers': []}
             }
         }
 
+        if traceback:
+            config['log_config']['loggers']['quart'] = {'handlers': ['error'], 'level': 'INFO'}
         if access_log_to_std:
             config['log_config']['handlers']['access_std'] = {'formatter': 'access_std', 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stdout'}
             config['log_config']['loggers']['uvicorn.access']['handlers'].append('access_std')
@@ -186,7 +188,7 @@ class WebServer(Quart):
             config['log_config']['handlers']['access_file'] = {'formatter': 'access_file', 'class': 'logging.FileHandler', 'filename': access_log_file}
             config['log_config']['loggers']['uvicorn.access']['handlers'].append('access_file')
 
-            # try multi-core execution
+        # try multi-core execution
         if config.get('workers', None):
             self.logger.debug(f"{self.__class__.__name__}.run_server() multi-core execution is a beta feature. You can also use uvicorn CLI directly.")
             instance_path = self._get_own_instance_path()
