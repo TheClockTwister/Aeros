@@ -35,7 +35,7 @@ Aeros Repository Links
     :glob:
     :hidden:
 
-    content/*
+    content/general/*
 
 .. toctree::
     :maxdepth: 2

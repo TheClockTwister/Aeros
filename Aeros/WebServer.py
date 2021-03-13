@@ -31,6 +31,17 @@ class WebServer(Quart):
     def __init__(self, import_name: str, host: str = "0.0.0.0", port: int = 80, include_server_header: bool = True,
                  logging_level: int = INFO, cache: Cache = None, compression: Base = None,
                  global_headers: dict = {}, *args, **kwargs):
+        """
+        Arguments:
+            import_name (str): A name for the web server instance (usually __name__)
+            host (str): The hostname / IP address to bind to
+            port (int): The TCP port to bind to
+            include_server_header (bool): If True, the "server" response header will be set (default: True)
+            logging_level (int): Log level for console logging (default: logging.INFO)
+            cache (Cache): Any caching instance from Aeros
+            compression (Base): Any compression instance from Aeros (Gzip or Br)
+            global_headers (dict): Response headers to be sent on every response
+        """
 
         super().__init__(import_name, *args, **kwargs)
 
@@ -105,7 +116,7 @@ class WebServer(Quart):
 
     def run_server(self,
                    host: str = None, port: int = None, log_level: int = None,  # overrides for __init__
-                   access_log_file: str = None, access_log_to_std: bool = True,
+                   access_log_file: str = None, access_log_to_std: bool = True, traceback: bool = True,
                    soft_limit: int = 32, hard_limit: int = 42,
                    **kwargs
                    ) -> None:
@@ -113,6 +124,7 @@ class WebServer(Quart):
             `uvicorn.run()` method as they are passed into `Config(app, **kwargs)`. This method also configures features like caching
             and compression that are not default in Quart or Flask and unique to Aeros or require third-party modules to be configured.
         """
+
         if kwargs.get('suppress_deprecation_warning', False):
             del kwargs['suppress_deprecation_warning']
         else:
@@ -162,11 +174,13 @@ class WebServer(Quart):
                 'error': {'formatter': 'default', 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stderr'}
             },
             'loggers': {
-                'uvicorn': {'level': log_level, 'handlers': ['default']},
-                'uvicorn.access': {'level': 'INFO', 'propagate': False, 'handlers': []}
+                'uvicorn': {'level': log_level if log_level else INFO, 'handlers': ['default']},
+                'uvicorn.access': {'level': 'DEBUG', 'propagate': False, 'handlers': []}
             }
         }
 
+        if traceback:
+            config['log_config']['loggers']['quart'] = {'handlers': ['error'], 'level': 'INFO'}
         if access_log_to_std:
             config['log_config']['handlers']['access_std'] = {'formatter': 'access_std', 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stdout'}
             config['log_config']['loggers']['uvicorn.access']['handlers'].append('access_std')
@@ -174,7 +188,7 @@ class WebServer(Quart):
             config['log_config']['handlers']['access_file'] = {'formatter': 'access_file', 'class': 'logging.FileHandler', 'filename': access_log_file}
             config['log_config']['loggers']['uvicorn.access']['handlers'].append('access_file')
 
-            # try multi-core execution
+        # try multi-core execution
         if config.get('workers', None):
             self.logger.debug(f"{self.__class__.__name__}.run_server() multi-core execution is a beta feature. You can also use uvicorn CLI directly.")
             instance_path = self._get_own_instance_path()
