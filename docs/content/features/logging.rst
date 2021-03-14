@@ -1,23 +1,21 @@
 Logging
 ===========================================================
 
-By default, all output will be written to **stdout**,
-except tracebacks, which will be written to **stderr**.
+By default, the following rules apply:
 
-You can adjust the logging behaviour by using keywords on `Webserver.run()`
+- All output will be written to **stdout**,
+- The console output has a log level of ``logging.INFO`` and colors are enabled.
+- Tracebacks (exceptions in your endpoint functions) are logged to **stderr**.
+
+You can adjust the logging behaviour by using keywords on ``WebServer()``
 as described in the following example code snippet:
 
     .. code-block::
 
         from Aeros import WebServer
 
-        app = WebServer(__name__)
-
-        @app.route("/")
-        async def just_say_hello():
-            return "Hi, I am your new backend :)"
-
-        app.run(
+        app = WebServer(
+            __name__,
             log_level=logging.DEBUG, # set logging level (default: INFO)
             log_to_std=False, # print logs to console (default: True)
             access_log_to_std=False, # print access logs to console (default: True)
@@ -26,6 +24,12 @@ as described in the following example code snippet:
             traceback=False, # log tracebacks if exceptions occur (default: True)
             color=True # colored terminal output (default: True) (doesn't affect files)
         )
+
+        @app.route("/")
+        async def just_say_hello():
+            return "Hi, I am your new backend :)"
+
+        app.run()
 
     .. admonition:: Available since version 2.0.0
 

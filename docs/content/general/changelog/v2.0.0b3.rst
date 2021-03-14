@@ -1,0 +1,21 @@
+Version 2.0.0b3
+-----------------------------------------------------------
+I've implemented many performance and usability improvements, the most significant being the replacement of hypercorn with uvicorn, which is much faster and makes the clumsy patches obsolete.
+
+Features
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- Client-side caching
+- Logging access logs to a file
+- Separating traceback log to stderr and access/info log to stdout
+- Execution parameters
+
+    - concurrency count
+    - worker count
+    - max TCP connection count)
+
+Improvements
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- Major performance improvement (see benchmark)
+- Multi-core execution support
+- Documentation at `aeros.readthedocs.io <https://aeros.readthedocs.io/>`_
+

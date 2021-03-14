@@ -1,4 +1,4 @@
-Aeros Python Documentation
+Aeros Documentation
 ===========================================================
 
 .. _Aeros: https://pypi.org/project/Aeros/
@@ -9,7 +9,9 @@ Aeros Python Documentation
 Aeros_ is a production-grade ASGI (Asynchronous Server Gateway Interface) package
 containing wrappers for widely used Web and API functions.
 
-**Have a look at the** :ref:`Getting Started` **section!**
+**You are new? Have a look at the** :ref:`Getting Started` **section!**
+
+**You are an old friend? Have a look at the** :ref:`Changelog` **section!**
 
 .. admonition:: Contributors wanted
 
@@ -39,11 +41,19 @@ Aeros Repository Links
 
 .. toctree::
     :maxdepth: 2
-    :caption: Code Examples
+    :caption: Features & Examples
     :glob:
     :hidden:
 
-    content/examples/index
+    content/features/*
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Getting Started
+    :glob:
+    :hidden:
+
+    content/getting_started.rst
 
 .. toctree::
     :maxdepth: 1

@@ -1,7 +1,3 @@
-###########################################################
-Getting Started
-###########################################################
-
 .. _localhost: http://127.0.0.1/
 .. _flask_routes https://flask.palletsprojects.com/en/1.1.x/quickstart/#routing
 
@@ -10,7 +6,7 @@ Getting Started
     Aeros uses methods from the quart module, which itself copies the syntax of flask.
     You may treat an ``Aeros.WebServer`` instance just like a ``quart.Quart`` instance.
 
-    **Most of the Flask documentation also apply to Quart and therefore to Aeros. Use it!**
+    **Most of the Flask documentation also applies to Quart and therefore to Aeros. Use it!**
 
 Prerequisites
 ===========================================================
@@ -90,21 +86,3 @@ before it can send the answer. That's why we write ``await`` in front of it.
     Make sure to always import methods from the ``quart`` module, not ``flask``, since Flask runs synchronous
     and therefore does not work with an asynchronous web server. Fore more information, see
     `What's async programming <https://medium.com/velotio-perspectives/an-introduction-to-asynchronous-programming-in-python-af0189a88bbb>`_
-
-
-
-###########################################################
-Detailed Examples
-###########################################################
-
-- Comming Soon
-- Comming Soon
-- Comming Soon
-- Comming Soon
-
-.. toctree::
-    :maxdepth: 2
-    :glob:
-
-    *
-    */__init__
