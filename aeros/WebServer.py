@@ -18,6 +18,38 @@ from .caching.server import Cache
 from .compression import Base
 from .Request import EasyRequest
 
+from asgiref.sync import sync_to_async, SyncToAsync
+from typing import Callable, Coroutine, Any
+from functools import wraps
+
+
+def ensure_async(f: Callable, callback_on_sync: Callable = None):
+    # -> Callable[[Any], Coroutine[Any, Any, Any]]
+    """
+    Ensures, that a supplied function is asynchronous. Detects Python-native async
+    functions and functions wrapped with `asgiref.sync.sync_to_async()`.
+
+    Arguments:
+        f (Callable): The function that should be ensured async
+        callback_on_sync (Callable): Called if a function is converted to async
+
+    Returns:
+        Callable[..., Coroutine[...]]: An async version of the supplied function
+    """
+
+    #
+
+    if inspect.iscoroutinefunction(f) or type(f) == SyncToAsync:
+        return f
+
+    @wraps(f)
+    async def wrapper(*args, **kwargs):
+        return await sync_to_async(f)(*args, **kwargs)
+
+    if callback_on_sync:
+        callback_on_sync()
+    return wrapper
+
 
 class WebServer(Quart):
     """ This is the main server class which extends a standard Flask class by a bunch of features and major
@@ -231,8 +263,18 @@ class WebServer(Quart):
         return self.run(*args, show_deprecation_warning=True, **kwargs)
 
     def route(self, *args, **kwargs):
+        rule = kwargs.get('rule', args[0])
+
         def new_route_decorator(func):
-            new_func = EasyRequest()(func)  # inject EasyRequest into every function so that it is always available
-            Quart.route(super(WebServer, self), *args, **kwargs)(new_func)  # route the new function to Quart.route
+            try:
+                new_func = ensure_async(
+                    func,
+                    callback_on_sync=lambda: self.logger.warning(f'Endpoint function "{func.__name__}" for "{rule}" is not asynchronous.')
+                )
+                new_func = EasyRequest()(new_func)  # inject EasyRequest into every function so that it is always available
+                Quart.route(self, *args, **kwargs)(new_func)  # route the new function to Quart.route
+            except Exception as e:
+                self.logger.critical(f'Endpoint function "{func.__name__}" for "{rule}" could not be routed: ' + str(e))
+                raise e
 
         return new_route_decorator
