@@ -110,7 +110,6 @@ class WebServer(Quart):
                         pass
             except IndexError:
                 self.logger.critical(f"{self.__class__.__name__} is unable to find own instance file:name. Launching in single-thread mode!")
-                return None
 
     def run(self,
             host: str = None, port: int = None, log_level: int = None,  # overrides for __init__
@@ -125,33 +124,6 @@ class WebServer(Quart):
             `uvicorn.run()` method as they are passed into `Config(app, **kwargs)`. This method also configures features like caching
             and compression that are not default in Quart or Flask and unique to Aeros or require third-party modules to be configured.
         """
-
-        h = logging.StreamHandler(sys.stdout)  # make own logging format the same as uvicorn uses
-        h.setFormatter(DefaultLogFormatter(color=color))
-        self.logger.handlers = [h]
-
-        if log_to_std:
-            print()  # print empty line (makes reading the first CLI line easier)
-            msg = click.style('aeros.readthedocs.io', underline=True, fg='bright_blue') if color else 'aeros.readthedocs.io'
-            self.logger.info(f"Documentation & common fixes at {msg}.")
-
-        # initialize extra features ---------------------------------------------------------------------------------------------------
-
-        if issubclass(self._cache.__class__, Cache):
-            self._cache.init_app(self)
-            if log_to_std:
-                self.logger.info("Caching is enabled")
-        else:
-            if log_to_std:
-                self.logger.info("Caching is disabled")
-
-        if issubclass(self._compression.__class__, Base):
-            self._compression.init_app(self)
-            if log_to_std:
-                self.logger.info("Compression is enabled")
-        else:
-            if log_to_std:
-                self.logger.info("Compression is disabled")
 
         # create uvicorn configuration ------------------------------------------------------------------------------------------------
 
@@ -173,6 +145,15 @@ class WebServer(Quart):
         # configure logging parameters ------------------------------------------------------------------------------------------------
 
         self.logger.setLevel(log_level if log_level else self.log_level)  # re-set log level for instance logger if changed
+
+        h = logging.StreamHandler(sys.stdout)  # make own logging format the same as uvicorn uses
+        h.setFormatter(DefaultLogFormatter(color=color))
+        self.logger.handlers = [h]
+
+        if log_to_std:
+            print()  # print empty line (makes reading the first CLI line easier)
+            msg = click.style('aeros.readthedocs.io', underline=True, fg='bright_blue') if color else 'aeros.readthedocs.io'
+            self.logger.info(f"Documentation & common fixes at {msg}.")
 
         config['log_config'] = {  # logging configuration for uvicorn.run()
             'version': 1, 'disable_existing_loggers': True,
@@ -209,6 +190,24 @@ class WebServer(Quart):
             config['log_config']['loggers']['uvicorn']['handlers'].append('default')
         if access_log_to_std:
             config['log_config']['loggers']['uvicorn.access']['handlers'].append('access')
+
+        # initialize extra features ---------------------------------------------------------------------------------------------------
+
+        if issubclass(self._cache.__class__, Cache):
+            self._cache.init_app(self)
+            if log_to_std:
+                self.logger.info("Caching is enabled")
+        else:
+            if log_to_std:
+                self.logger.info("Caching is disabled")
+
+        if issubclass(self._compression.__class__, Base):
+            self._compression.init_app(self)
+            if log_to_std:
+                self.logger.info("Compression is enabled")
+        else:
+            if log_to_std:
+                self.logger.info("Compression is disabled")
 
         # configure uvicorn execution parameters --------------------------------------------------------------------------------------
 
