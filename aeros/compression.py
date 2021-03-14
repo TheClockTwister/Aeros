@@ -33,7 +33,6 @@ class Base:
         app.config["COMPRESS_MIN_SIZE"] = self.min_size
         app.config["COMPRESS_LEVEL"] = self.level
         app.config["COMPRESS_MIMETYPES"] = self.mimetypes
-        print("Algorithm is", self.algorithm)
         self.compressor.init_app(app)
 
 
