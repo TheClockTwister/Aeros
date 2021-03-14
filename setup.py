@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Aeros",
-    version="2.0.0b3",
+    version="2.0.0b4",
     author="TheClockTwister",
     description="High-performance ASGI framework",
     long_description=long_description,
