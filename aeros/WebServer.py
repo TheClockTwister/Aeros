@@ -221,11 +221,14 @@ class WebServer(Quart):
                 del config['workers']  # if instance not found, delete worker count and launch single-thread
                 self.logger.info(f"Starting in single-thread mode...")
 
+        if kwargs.get('show_deprecation_warning', False):
+            del config['show_deprecation_warning']
+            self.logger.warning('The usage of run_server() is deprecated. Use run() instead.')
+
         uvicorn.run(**config)
 
     def run_server(self, *args, **kwargs):
-        self.logger.warning('The usage of run_server() is deprecated. Use run() instead.')  # delete, otherwise it gets into the config
-        return self.run(*args, **kwargs)
+        return self.run(*args, show_deprecation_warning=True, **kwargs)
 
     def route(self, *args, **kwargs):
         def new_route_decorator(func):
