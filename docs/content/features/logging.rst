@@ -12,7 +12,7 @@ as described in the following example code snippet:
 
     .. code-block::
 
-        from Aeros import WebServer
+        from aeros import WebServer
 
         app = WebServer(
             __name__,
