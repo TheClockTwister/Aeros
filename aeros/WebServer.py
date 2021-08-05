@@ -16,8 +16,10 @@ import sys
 from .log import AccessLogFormatter, DefaultLogFormatter
 from .caching.server import Cache
 from .compression import Base
-from .Request import EasyRequest
 
+from functools import wraps
+from asgiref.sync import sync_to_async, SyncToAsync
+from typing import Callable, Coroutine, Any
 from functools import wraps
 
 
@@ -237,6 +239,8 @@ class WebServer(Quart):
 
         def new_route_decorator(func):
             try:
+                if not (inspect.iscoroutinefunction(func) or type(func) == SyncToAsync):
+                    self.logger.warning(f'Endpoint function "{func.__name__}" for "{rule}" is not asynchronous.')
                 Quart.route(self, *args, **kwargs)(func)  # route the new function to Quart.route
                 return func
             except Exception as e:
