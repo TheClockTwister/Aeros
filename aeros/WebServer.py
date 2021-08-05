@@ -174,7 +174,7 @@ class WebServer(Quart):
 
         def decorator(f):
             if self._cache is None:
-                print('No cache specified in', self)
+                self.logger.warning(f'No cache specified for {self.__class__.__name__} instance: "{self.name}"')
                 return f
 
             @functools.wraps(f)
